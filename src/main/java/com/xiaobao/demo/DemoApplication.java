@@ -14,11 +14,7 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
         System.setProperty("tomcat.util.http.parser.HttpParser.requestTargetAllow","|{}");
-        System.out.println("(♥◠‿◠)ﾉﾞ  启动成功   ლ(´ڡ`ლ)ﾞ  \n" +
-                "  ╦╔╦╗╦═╗    \n" +
-                "  ║║║║╠╦╝    \n" +
-                " ╚╝╩ ╩╩╚═    \n" +
-                "                     ");
+        System.out.println("(♥◠‿◠)ﾉﾞ  启动成功   ლ(´ڡ`ლ)ﾞ  \n");
     }
 
 }
