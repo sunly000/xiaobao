@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xiaobao.demo.mapper.BacklogMapper">
+    <resultMap id="logResultMap" type="backlog">
+        <id property="bId" column="b_id"/>
+        <result property="bTitle" column="b_title"/>
+        <result property="bContent" column="b_content"/>
+        <result property="bTime" column="b_time"/>
+        <result property="bCreateTime" column="b_create_time"/>
+        <result property="bLastUpdateTime" column="b_lastupdate_time"/>
+        <result property="bDeadline" column="b_deadline"/>
+        <result property="flag" column="flag"/>
+        <result property="userId" column="user_id"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
+    <sql id="log_sql">
+        select b_id,b_title,b_content,b_time,b_create_time,b_lastupdate_time,b_deadline,flag,user_id,priority
+          from backlog
+    </sql>
+
+    <select id="getLogList" parameterType="Backlog" resultMap="logResultMap">
+        <include refid="log_sql"/>
+        <where>
+            <if test="bTitle != null and bTitle != ''">and b_title like concat('%',#{bTitle},'%')</if>
+            <if test="bContent != null and bContent != ''">and b_content like concat('%',#{bContent},'%')</if>
+            <if test="bTime != null and bTime != ''">and b_time = #{bTime}</if>
+            <if test="bCreateTime != null and bCreateTime != ''">and b_create_time = #{bCreateTime}</if>
+            <if test="bLastUpdateTime != null and bLastUpdateTime != ''">and b_lastupdate_time = #{bLastUpdateTime}</if>
+            <if test="bDeadline != null and bDeadline != ''">and b_deadline = #{bDeadline}</if>
+            <if test="flag != null and flag != ''">and flag = #{flag}</if>
+            <if test="userId != null and userId != ''">and user_id = #{userId}</if>
+            <if test="priority != null and priority != ''">and priority = #{priority}</if>
+            and flag = 1
+        </where>
+    </select>
+
+    <select id="getLogById" parameterType="int" resultMap="logResultMap">
+        <include refid="log_sql"/>
+        where b_id = #{bId}
+    </select>
+
+    <insert id="addLog" parameterType="backlog" useGeneratedKeys="true" keyProperty="bId">
+        insert into backlog
+        (b_title,b_content,b_time,b_create_time,b_lastupdate_time,b_deadline,flag,user_id,priority)
+        values
+        (#{bTitle},#{bContent},#{bTime},#{bCreateTime},#{bLastUpdateTime},#{bDeadline},#{flag},#{userId},#{priority})
+    </insert>
+
+    <update id="update" parameterType="backlog">
+        update backlog set
+        b_title = #{bTitle},
+        b_time = #{bTime},
+        b_create_time = #{bCreateTime},
+        b_content = #{bContent},
+        b_lastupdate_time = #{bLastUpdateTime},
+        priority = #{priority},
+        b_deadline = #{bDeadline}
+        <!--<trim prefix="set" suffixOverrides=",">-->
+            <!--<if test="bTitle != null and bTitle != ''">b_title = #{bTitle},</if>-->
+            <!--<if test="bTime != null and bTime != ''">b_time = #{bTime},</if>-->
+            <!--<if test="bContent != null and bContent != ''">b_content = #{bContent},</if>-->
+            <!--<if test="bLastUpdateTime != null and bLastUpdateTime != ''">b_lastupdate_time = #{bLastUpdateTime},</if>-->
+            <!--<if test="priority != null and priority != ''">priority = #{priority},</if>-->
+            <!--<if test="bDeadline != null and bDeadline != ''">b_deadline = #{bDeadline},</if>-->
+        <!--</trim>-->
+        where b_id = #{bId}
+    </update>
+
+    <!--在这里设置了回收站功能，将误删或者超出截止日期的事项放入回收站，有需要可以将其回复-->
+    <update id="doLog" parameterType="backlog">
+        update backlog set
+        flag = #{flag}
+        where b_id = #{bId}
+    </update>
+
+    <!--查询回收站：一些删除的内容 或者 过了截止时间自动删除的内容-->
+    <select id="getDelLogList" parameterType="Backlog" resultMap="logResultMap">
+        <include refid="log_sql"/>
+        <where>
+            <if test="bTitle != null and bTitle != ''">and b_title like concat('%',#{bTitle},'%')</if>
+            <if test="bContent != null and bContent != ''">and b_content like concat('%',#{bContent},'%')</if>
+            <if test="bTime != null and bTime != ''">and b_time = #{bTime}</if>
+            <if test="bCreateTime != null and bCreateTime != ''">and b_create_time = #{bCreateTime}</if>
+            <if test="bLastUpdateTime != null and bLastUpdateTime != ''">and b_lastupdate_time = #{bLastUpdateTime}</if>
+            <if test="bDeadline != null and bDeadline != ''">and b_deadline = #{bDeadline}</if>
+            <if test="flag != null and flag != ''">and flag = #{flag}</if>
+            <if test="userId != null and userId != ''">and user_id = #{userId}</if>
+            <if test="priority != null and priority != ''">and priority = #{priority}</if>
+            and flag = 0
+        </where>
+    </select>
+
+
+    <!--定时任务，超出截止日期，将数据删除 即 将其flag设置为0-->
+    <update id="clearDataJob">
+        update backlog set
+        b_create_time = sysdate(),
+        b_lastupdate_time = sysdate(),
+        flag = 0
+        where b_deadline = sysdate()
+    </update>
+
+    <delete id="deleteData" parameterType="backlog">
+        delete from
+        backlog where
+        b_id = #{bId}
+    </delete>
+</mapper>

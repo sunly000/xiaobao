@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎使用</title>
+    <link href="..static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link href="..static/css/index.css" th:href="@{/css/index.css}" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <!--<script src="jquery-1.2.6.min.js" th:src="@{/jquery-1.2.6.min.js}"></script>-->
+    <script src="jquery.tablesorter.min.js" th:src="@{/jquery.tablesorter.min.js}"></script>
+</head>
+<body>
+<div class="head">
+    欢迎您，<strong th:text="${user.userName}"></strong>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="content-left col-md-2">
+            <!--list-group;list-group-item列表组  nav-stacked垂直对齐 display:block 列表项任何区域都具备可点击-->
+            <ul class="nav nav-pills  list-group nav-stacked">
+                <li class="list-group-item"><a href="/backlog" style="display:block" target="right">我的待办事项</a></li>
+                <li class="list-group-item"><a href="/add" style="display:block" target="right">新增待办事项</a></li>
+                <li class="list-group-item"><a href="/recycle" style="display:block" target="right">历史待办事项</a></li>
+            </ul>
+        </div>
+        <div class="content-right col-md-9">
+            <iframe src="/backlog" scrolling="auto" name="right" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+<div class="footer" align="center">
+    &copy; 2021 Rights Reserved. sunly000 <br>
+</div>
+</body>
+</html>
